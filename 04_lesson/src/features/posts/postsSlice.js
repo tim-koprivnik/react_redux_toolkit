@@ -6,7 +6,7 @@ const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const initialState = {
     posts: [],
-    status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null
 }
 
@@ -15,27 +15,27 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     return response.data
 })
 
-export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPost) => {
-    const response = await axios.post(POSTS_URL, initialPost)
+export const addNewPost = createAsyncThunk('posts/addNewPost', async (post) => {
+    const response = await axios.post(POSTS_URL, post)
     return response.data
 })
 
-export const updatePost = createAsyncThunk('posts/updatePost', async (initialPost) => {
-    const { id } = initialPost;
+export const updatePost = createAsyncThunk('posts/updatePost', async (post) => {
+    const { id } = post;
     try {
-        const response = await axios.put(`${POSTS_URL}/${id}`, initialPost)
+        const response = await axios.put(`${POSTS_URL}/${id}`, post)
         return response.data
     } catch (err) {
         //return err.message;
-        return initialPost; // only for testing Redux!
+        return post; // only for testing Redux!
     }
 })
 
-export const deletePost = createAsyncThunk('posts/deletePost', async (initialPost) => {
-    const { id } = initialPost;
+export const deletePost = createAsyncThunk('posts/deletePost', async (post) => {
+    const { id } = post;
     try {
         const response = await axios.delete(`${POSTS_URL}/${id}`)
-        if (response?.status === 200) return initialPost;
+        if (response?.status === 200) return post;
         return `${response?.status}: ${response?.statusText}`;
     } catch (err) {
         return err.message;
@@ -79,7 +79,7 @@ const postsSlice = createSlice({
     },
     extraReducers(builder) {
         builder
-            .addCase(fetchPosts.pending, (state, action) => {
+            .addCase(fetchPosts.pending, (state, _action) => {
                 state.status = 'loading'
             })
             .addCase(fetchPosts.fulfilled, (state, action) => {
@@ -133,23 +133,25 @@ const postsSlice = createSlice({
             .addCase(updatePost.fulfilled, (state, action) => {
                 if (!action.payload?.id) {
                     console.log('Update could not complete')
-                    console.log(action.payload)
                     return;
                 }
                 const { id } = action.payload;
                 action.payload.date = new Date().toISOString();
                 const posts = state.posts.filter(post => post.id !== id);
                 state.posts = [...posts, action.payload];
+
+                console.log(action.payload)
             })
             .addCase(deletePost.fulfilled, (state, action) => {
                 if (!action.payload?.id) {
                     console.log('Delete could not complete')
-                    console.log(action.payload)
                     return;
                 }
                 const { id } = action.payload;
                 const posts = state.posts.filter(post => post.id !== id);
                 state.posts = posts;
+                
+                console.log(action.payload)
             })
     }
 })

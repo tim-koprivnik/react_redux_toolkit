@@ -6,7 +6,7 @@ const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const initialState = {
     posts: [],
-    status: 'idle', //'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null
 }
 
@@ -24,29 +24,29 @@ const postsSlice = createSlice({
     name: 'posts',
     initialState,
     reducers: {
-        postAdded: {
-            reducer(state, action) {
-                state.posts.push(action.payload)
-            },
-            prepare(title, content, userId) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        title,
-                        content,
-                        date: new Date().toISOString(),
-                        userId,
-                        reactions: {
-                            thumbsUp: 0,
-                            wow: 0,
-                            heart: 0,
-                            rocket: 0,
-                            coffee: 0
-                        }
-                    }
-                }
-            }
-        },
+    //     postAdded: {
+    //         reducer(state, action) {
+    //             state.posts.push(action.payload)
+    //         },
+    //         prepare(title, content, userId) {
+    //             return {
+    //                 payload: {
+    //                     id: nanoid(),
+    //                     title,
+    //                     content,
+    //                     date: new Date().toISOString(),
+    //                     userId,
+    //                     reactions: {
+    //                         thumbsUp: 0,
+    //                         wow: 0,
+    //                         heart: 0,
+    //                         rocket: 0,
+    //                         coffee: 0
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     },
         reactionAdded(state, action) {
             const { postId, reaction } = action.payload
             const existingPost = state.posts.find(post => post.id === postId)
@@ -77,7 +77,7 @@ const postsSlice = createSlice({
                 });
 
                 // Add any fetched posts to the array
-                state.posts = state.posts.concat(loadedPosts)
+                state.posts = [...state.posts, ...loadedPosts] // state.posts = state.posts.concat(loadedPosts)
             })
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.status = 'failed'
@@ -100,10 +100,10 @@ const postsSlice = createSlice({
                 action.payload.date = new Date().toISOString();
                 action.payload.reactions = {
                     thumbsUp: 0,
-                    hooray: 0,
+                    wow: 0,
                     heart: 0,
                     rocket: 0,
-                    eyes: 0
+                    coffee: 0
                 }
                 console.log(action.payload)
                 state.posts.push(action.payload)
